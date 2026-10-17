@@ -1,40 +1,39 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System; // Добавили для Action
 
 namespace DragItem
 {
     public class PuzzleSlot : Slot
     {
         [Header("Настройки головоломки")]
-        [SerializeField] private bool isTriggerSlot = true; // Влияет ли этот слот на головоломку?
-        [SerializeField] private ItemsState requiredItemState; // Какая лампочка здесь должна быть
+        [SerializeField] private bool isTriggerSlot = true;
+        [SerializeField] private ItemsState requiredItemState;
 
         [Header("Состояние слота")]
-        [SerializeField] private bool isConditionMet = false; // Пройдена ли проверка в этом слоте
+        [SerializeField] private bool isConditionMet = false;
 
-        // Свойство для получения статуса слота из других скриптов (например, из менеджера головоломки)
+        // СОБЫТИЕ: вызывается каждый раз, когда состояние слота меняется
+        public static event Action OnSlotStateChanged;
+
         public bool IsConditionMet
         {
             get
             {
-                // Если слот не влияет на головоломку, он всегда возвращает true (не мешает победе)
                 if (!isTriggerSlot) return true;
                 return isConditionMet;
             }
         }
 
-        // Переопределяем метод размещения предмета, чтобы сразу делать проверку
         public override void PlaceItem(GameObject item)
         {
             base.PlaceItem(item);
 
-            // Ищем компонент определения предмета на пришедшем GameObject
             SubjectDefinition subject = item.GetComponent<SubjectDefinition>();
 
             if (subject != null)
             {
-                // Сравниваем state лампочки с требуемым в этом слоте
                 if (subject.state == requiredItemState)
                 {
                     isConditionMet = true;
@@ -43,21 +42,25 @@ namespace DragItem
                 else
                 {
                     isConditionMet = false;
-                    Debug.Log($"[{gameObject.name}] Лампочка вставлена, но она не подходит для решения.");
+                    Debug.Log($"[{gameObject.name}] Лампочка не подходит.");
                 }
             }
             else
             {
-                // Если предмет без скрипта SubjectDefinition, условие не выполнено
                 isConditionMet = false;
             }
+
+            // Оповещаем менеджер изменений
+            OnSlotStateChanged?.Invoke();
         }
 
-        // Переопределяем очистку слота (когда лампочку забрали)
         public override void ClearSlot()
         {
             base.ClearSlot();
-            isConditionMet = false; // Лампочку забрали -> условие больше не выполнено
+            isConditionMet = false;
+
+            // Оповещаем менеджер изменений
+            OnSlotStateChanged?.Invoke();
         }
     }
 }
