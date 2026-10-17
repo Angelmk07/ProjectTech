@@ -1,28 +1,49 @@
+
 using UnityEngine;
 
-/// <summary>
-/// Повесьте на шипы, врагов, снаряды, зону-пропасть.
-/// Нужен Collider2D (триггер или обычный). Цель определяется только по слою.
-/// </summary>
 public class DamageDealer : MonoBehaviour
 {
-    [SerializeField] int damage = 1;
-    [SerializeField] bool instantKill;
-    [SerializeField] LayerMask targetLayers;
+    [SerializeField] private int damage = 1;
+    [SerializeField] private bool instantKill;
+    [SerializeField] private LayerMask targetLayers;
 
-    void OnCollisionEnter2D(Collision2D collision) => TryDamage(collision.collider);
-    void OnCollisionStay2D(Collision2D collision) => TryDamage(collision.collider);
-    void OnTriggerEnter2D(Collider2D other) => TryDamage(other);
-    void OnTriggerStay2D(Collider2D other) => TryDamage(other);
-
-    void TryDamage(Collider2D other)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if ((targetLayers.value & (1 << other.gameObject.layer)) == 0) return;
+        DealDamage(collision.collider.transform);
+    }
 
-        Health health = other.GetComponentInParent<Health>();
-        if (health == null) return;
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        DealDamage(collision.collider.transform);
+    }
 
-        if (instantKill) health.Kill();
-        else health.TakeDamage(damage, transform.position);
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        DealDamage(other.transform);
+    }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        DealDamage(other.transform);
+    }
+
+    public void DealDamage(Transform target)
+    {
+        if (target == null) return;
+
+        int targetLayer = 1 << target.gameObject.layer;
+
+        if ((targetLayers.value & targetLayer) == 0)
+            return;
+
+        Health health = target.GetComponentInParent<Health>();
+
+        if (health == null)
+            return;
+
+        if (instantKill)
+            health.Kill();
+        else
+            health.TakeDamage(damage, transform.position);
     }
 }
