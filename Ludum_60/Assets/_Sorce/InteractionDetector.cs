@@ -2,10 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// <summary>
-/// Вешается на игрока. Ищет ближайший IInteractable в радиусе (только по Layer),
-/// читает кнопку взаимодействия через новую Input System и вызывает Interact.
-/// </summary>
+
 public class InteractionDetector : MonoBehaviour
 {
     [Header("Input")]
@@ -17,21 +14,16 @@ public class InteractionDetector : MonoBehaviour
     [SerializeField] private float radius = 1.5f;
     [SerializeField] private Vector2 offset;
 
-    /// <summary>Текущая цель или null.</summary>
     public IInteractable Current { get; private set; }
 
-    /// <summary>true — детектор заблокирован (идёт головоломка и т.п.), цели нет.</summary>
     public bool IsLocked { get; private set; }
 
     public InputAction Action => interactAction != null ? interactAction.action : null;
 
-    /// <summary>Цель изменилась (в т.ч. на null).</summary>
     public event Action<IInteractable> TargetChanged;
 
-    /// <summary>Прогресс удержания 0..1.</summary>
     public event Action<float> HoldProgressChanged;
 
-    /// <summary>Взаимодействие произошло.</summary>
     public event Action<IInteractable> Interacted;
 
     private readonly Collider2D[] buffer = new Collider2D[16];
@@ -68,7 +60,6 @@ public class InteractionDetector : MonoBehaviour
         HandleInput();
     }
 
-    /// <summary>Блокирует/разблокирует взаимодействие (головоломка, диалог, меню).</summary>
     public void SetLocked(bool locked)
     {
         IsLocked = locked;
@@ -109,14 +100,12 @@ public class InteractionDetector : MonoBehaviour
 
         float hold = Current.HoldDuration;
 
-        // Обычное нажатие
         if (hold <= 0f)
         {
             if (action.WasPressedThisFrame()) Trigger();
             return;
         }
 
-        // Удержание
         if (!action.IsPressed())
         {
             waitForRelease = false;
@@ -166,7 +155,6 @@ public class InteractionDetector : MonoBehaviour
         HoldProgressChanged?.Invoke(0f);
     }
 
-    // Защита от уничтоженных объектов: интерфейс не равен null после Destroy
     private static bool IsAlive(IInteractable i)
     {
         return !(i is UnityEngine.Object o) || o != null;

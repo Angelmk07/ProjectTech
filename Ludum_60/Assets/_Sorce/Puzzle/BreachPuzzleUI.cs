@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -20,21 +21,21 @@ public class BreachPuzzleUI : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] GameObject panelRoot;
-    [SerializeField] RectTransform gridRoot;        
+    [SerializeField] RectTransform gridRoot;
     [SerializeField] BreachCell cellPrefab;
-    [SerializeField] RectTransform keyRoot;         
+    [SerializeField] RectTransform keyRoot;
     [SerializeField] TMP_Text keySlotPrefab;
     [SerializeField] TMP_Text timerText;
-    [SerializeField] Image timerFill;              
+    [SerializeField] Image timerFill;
     [SerializeField] TMP_Text errorsText;
-    [SerializeField] TMP_Text statusText;           
+    [SerializeField] TMP_Text statusText;
 
     [Header("Цвета ключа")]
     [SerializeField] Color slotPending = Color.white;
     [SerializeField] Color slotCurrent = new Color(1f, 0.9f, 0.2f);
     [SerializeField] Color slotDone = new Color(0.35f, 0.35f, 0.35f);
 
-    [Header("События")]
+    [Header("Общие события (для всех запусков)")]
     public UnityEvent OnSolved;
     public UnityEvent OnFailed;
 
@@ -43,6 +44,10 @@ public class BreachPuzzleUI : MonoBehaviour
     readonly List<BreachCell> picked = new List<BreachCell>();
     readonly List<TMP_Text> slots = new List<TMP_Text>();
 
+    // Колбэки текущего запуска: задаёт тот, кто запустил головоломку (терминал).
+    Action solvedCallback;
+    Action failedCallback;
+
     int progress;
     int errors;
     float timeLeft;
@@ -50,21 +55,25 @@ public class BreachPuzzleUI : MonoBehaviour
     bool finished = true;
     float prevTimeScale = 1f;
 
-    void Awake() 
+    void Awake()
     {
         if (panelRoot != null) panelRoot.SetActive(false);
     }
-    //private void Start()
-    //{
-    //    StartPuzzle();
-    //}
 
-    public void StartPuzzle() => StartPuzzle(keyLength, timeLimit);
+    // ---------- Публичный API ----------
 
-    public void StartPuzzle(int newKeyLength, float newTimeLimit)
+    public void StartPuzzle() => StartPuzzle(keyLength, timeLimit, null, null);
+
+    /// <summary>Запуск с колбэками: они вызовутся только для этого запуска.</summary>
+    public void StartPuzzle(Action onSolved, Action onFailed = null)
+        => StartPuzzle(keyLength, timeLimit, onSolved, onFailed);
+
+    public void StartPuzzle(int newKeyLength, float newTimeLimit, Action onSolved = null, Action onFailed = null)
     {
         keyLength = newKeyLength;
         timeLimit = newTimeLimit;
+        solvedCallback = onSolved;
+        failedCallback = onFailed;
 
         StopAllCoroutines();
         panelRoot.SetActive(true);
@@ -90,6 +99,7 @@ public class BreachPuzzleUI : MonoBehaviour
         RefreshHud();
     }
 
+    // ---------- Построение UI ----------
 
     void BuildGrid()
     {
@@ -103,6 +113,7 @@ public class BreachPuzzleUI : MonoBehaviour
             layout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
             layout.constraintCount = data.size;
         }
+
         for (int y = 0; y < data.size; y++)
         {
             for (int x = 0; x < data.size; x++)
@@ -127,6 +138,7 @@ public class BreachPuzzleUI : MonoBehaviour
         }
     }
 
+    // ---------- Логика ----------
 
     void OnCellClicked(BreachCell cell)
     {
@@ -205,6 +217,14 @@ public class BreachPuzzleUI : MonoBehaviour
             statusText.text = success ? "ВЗЛОМ УСПЕШЕН" : "ВЗЛОМ ПРОВАЛЕН";
             statusText.color = success ? Color.green : Color.red;
         }
+
+        // Забираем колбэки и сразу очищаем, чтобы они не сработали повторно
+        // и не перешли на следующий запуск с другого терминала.
+        var onDone = success ? solvedCallback : failedCallback;
+        solvedCallback = null;
+        failedCallback = null;
+
+        onDone?.Invoke();
         if (success) OnSolved?.Invoke();
         else OnFailed?.Invoke();
 
@@ -222,6 +242,8 @@ public class BreachPuzzleUI : MonoBehaviour
         panelRoot.SetActive(false);
         if (pauseGameplay) Time.timeScale = prevTimeScale;
     }
+
+    // ---------- Отображение ----------
 
     void RefreshHighlights()
     {

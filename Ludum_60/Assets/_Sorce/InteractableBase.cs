@@ -1,10 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-/// <summary>
-/// Базовый класс для интерактивных объектов. Наследуйтесь и переопределяйте OnInteract.
-/// Объект должен быть на слое из interactableLayers детектора и иметь Collider2D (можно Trigger).
-/// </summary>
+
 public abstract class InteractableBase : MonoBehaviour, IInteractable
 {
     [Header("Interaction")]
