@@ -209,9 +209,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DragItem.PuzzleSlot
   slotImage: {fileID: 0}
   index: 0
-  isTriggerSlot: 1
   requiredItemState: 0
-  isConditionMet: 0
+  isConditionMet: 1
+  currentItem: {fileID: 0}
 --- !u!1 &179944875
 GameObject:
   m_ObjectHideFlags: 0
@@ -345,9 +345,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DragItem.PuzzleSlot
   slotImage: {fileID: 0}
   index: 0
-  isTriggerSlot: 1
   requiredItemState: 0
-  isConditionMet: 0
+  isConditionMet: 1
+  currentItem: {fileID: 0}
 --- !u!1 &285830400
 GameObject:
   m_ObjectHideFlags: 0
@@ -724,9 +724,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DragItem.PuzzleSlot
   slotImage: {fileID: 0}
   index: 0
-  isTriggerSlot: 1
   requiredItemState: 0
-  isConditionMet: 0
+  isConditionMet: 1
+  currentItem: {fileID: 0}
 --- !u!1 &430774365
 GameObject:
   m_ObjectHideFlags: 0
@@ -989,9 +989,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DragItem.PuzzleSlot
   slotImage: {fileID: 0}
   index: 0
-  isTriggerSlot: 1
   requiredItemState: 0
-  isConditionMet: 0
+  isConditionMet: 1
+  currentItem: {fileID: 0}
 --- !u!1 &653256362
 GameObject:
   m_ObjectHideFlags: 0
@@ -1159,9 +1159,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DragItem.PuzzleSlot
   slotImage: {fileID: 0}
   index: 0
-  isTriggerSlot: 1
   requiredItemState: 0
-  isConditionMet: 0
+  isConditionMet: 1
+  currentItem: {fileID: 0}
 --- !u!1 &857881461
 GameObject:
   m_ObjectHideFlags: 0
@@ -1342,9 +1342,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DragItem.PuzzleSlot
   slotImage: {fileID: 0}
   index: 0
-  isTriggerSlot: 1
   requiredItemState: 2
   isConditionMet: 1
+  currentItem: {fileID: 1571214576}
 --- !u!1 &973141249
 GameObject:
   m_ObjectHideFlags: 0
@@ -1514,9 +1514,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DragItem.PuzzleSlot
   slotImage: {fileID: 0}
   index: 0
-  isTriggerSlot: 1
   requiredItemState: 0
-  isConditionMet: 0
+  isConditionMet: 1
+  currentItem: {fileID: 0}
 --- !u!1 &1273678822
 GameObject:
   m_ObjectHideFlags: 0
@@ -1607,9 +1607,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DragItem.PuzzleSlot
   slotImage: {fileID: 0}
   index: 0
-  isTriggerSlot: 1
   requiredItemState: 1
   isConditionMet: 1
+  currentItem: {fileID: 1622383898}
 --- !u!1 &1378708126
 GameObject:
   m_ObjectHideFlags: 0
@@ -1643,7 +1643,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DragItem.Door2D
   moveDistance: 2
   speed: 3
-  doorCollider: {fileID: 0}
+  doorCollider: {fileID: 1378708128}
 --- !u!61 &1378708128
 BoxCollider2D:
   m_ObjectHideFlags: 0
