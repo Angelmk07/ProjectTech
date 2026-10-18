@@ -44,7 +44,6 @@ public class BreachPuzzleUI : MonoBehaviour
     readonly List<BreachCell> picked = new List<BreachCell>();
     readonly List<TMP_Text> slots = new List<TMP_Text>();
 
-    // Колбэки текущего запуска: задаёт тот, кто запустил головоломку (терминал).
     Action solvedCallback;
     Action failedCallback;
 
@@ -60,11 +59,9 @@ public class BreachPuzzleUI : MonoBehaviour
         if (panelRoot != null) panelRoot.SetActive(false);
     }
 
-    // ---------- Публичный API ----------
 
     public void StartPuzzle() => StartPuzzle(keyLength, timeLimit, null, null);
 
-    /// <summary>Запуск с колбэками: они вызовутся только для этого запуска.</summary>
     public void StartPuzzle(Action onSolved, Action onFailed = null)
         => StartPuzzle(keyLength, timeLimit, onSolved, onFailed);
 
@@ -99,7 +96,6 @@ public class BreachPuzzleUI : MonoBehaviour
         RefreshHud();
     }
 
-    // ---------- Построение UI ----------
 
     void BuildGrid()
     {
@@ -138,7 +134,6 @@ public class BreachPuzzleUI : MonoBehaviour
         }
     }
 
-    // ---------- Логика ----------
 
     void OnCellClicked(BreachCell cell)
     {
@@ -217,9 +212,6 @@ public class BreachPuzzleUI : MonoBehaviour
             statusText.text = success ? "ВЗЛОМ УСПЕШЕН" : "ВЗЛОМ ПРОВАЛЕН";
             statusText.color = success ? Color.green : Color.red;
         }
-
-        // Забираем колбэки и сразу очищаем, чтобы они не сработали повторно
-        // и не перешли на следующий запуск с другого терминала.
         var onDone = success ? solvedCallback : failedCallback;
         solvedCallback = null;
         failedCallback = null;
@@ -242,8 +234,6 @@ public class BreachPuzzleUI : MonoBehaviour
         panelRoot.SetActive(false);
         if (pauseGameplay) Time.timeScale = prevTimeScale;
     }
-
-    // ---------- Отображение ----------
 
     void RefreshHighlights()
     {

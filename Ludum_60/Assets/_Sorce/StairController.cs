@@ -14,7 +14,26 @@ public class StairController : MonoBehaviour
     [Header("Слой игрока")]
     [SerializeField] private LayerMask playerLayer;
 
-    public StairState State { get; private set; } = StairState.Descending;
+    [Header("Sorting Order игрока")]
+    [SerializeField] private int orderBehindUpper = 2;
+    [SerializeField] private int orderFrontOfUpper = 8;
+
+    [Header("Через сколько секунд режим подъёма сбрасывается сам")]
+    [SerializeField] private float ascendTimeout = 6f;
+
+    private StairState state = StairState.Descending;
+    private float ascendingSince;
+
+    // Состояние с учётом тайм-аута
+    private bool IsAscending
+    {
+        get
+        {
+            if (state == StairState.Ascending && Time.time - ascendingSince > ascendTimeout)
+                state = StairState.Descending;
+            return state == StairState.Ascending;
+        }
+    }
 
     private void Awake()
     {
@@ -26,39 +45,54 @@ public class StairController : MonoBehaviour
         return (playerLayer.value & (1 << other.gameObject.layer)) != 0;
     }
 
-    // Нижняя зона: приоритетная, всегда включает режим подъёма
-    public void OnBottomTouched()
+    private void SetOrder(Collider2D player, int order)
     {
-        State = StairState.Ascending;
-        upperWalk.enabled = false;
+        var sprite = player.GetComponentInChildren<SpriteRenderer>();
+        if (sprite != null)
+            sprite.sortingOrder = order;
     }
 
-    // Вход в зону площадки без нажатой клавиши: решает состояние
-    public void OnLandingEntered()
+    // Низ: приоритетная зона
+    public void OnBottomTouched(Collider2D player)
     {
-        if (State == StairState.Ascending)
+        state = StairState.Ascending;
+        ascendingSince = Time.time;
+        upperWalk.enabled = false;
+        SetOrder(player, orderFrontOfUpper);
+    }
+
+    // Центр без нажатой клавиши: решает намерение
+    public void OnLandingEntered(Collider2D player)
+    {
+        if (IsAscending)
         {
+            // шёл снизу: взбирается
             upperWalk.enabled = true;
-            State = StairState.Descending; // сброс на дефолт
+            state = StairState.Descending;
+            SetOrder(player, orderBehindUpper);
         }
         else
         {
+            // пришёл сверху (или без намерения): спускается
             upperWalk.enabled = false;
+            SetOrder(player, orderFrontOfUpper);
         }
     }
 
-    // Игрок на площадке явно выбрал направление клавишей
-    public void OnLandingChoice(bool wantUp)
+    // Центр с нажатой клавишей: игрок передумал
+    public void OnLandingChoice(Collider2D player, bool wantUp)
     {
         upperWalk.enabled = wantUp;
-        State = StairState.Descending;
+        state = StairState.Descending;
+        SetOrder(player, wantUp ? orderBehindUpper : orderFrontOfUpper);
     }
 
-    // Верхняя зона: игнорируется, пока игрок поднимается снизу
-    public void OnTopTouched()
+    // Верх: игнорируется, пока игрок явно поднимается снизу
+    public void OnTopTouched(Collider2D player)
     {
-        if (State == StairState.Ascending) return;
+        if (IsAscending) return;
 
         upperWalk.enabled = true;
+        SetOrder(player, orderBehindUpper);
     }
 }
