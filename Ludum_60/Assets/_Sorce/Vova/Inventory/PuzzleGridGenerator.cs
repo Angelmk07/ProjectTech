@@ -47,10 +47,7 @@ namespace DragItem
                 Generate(testRows, testColumns, testRequirements);
         }
 
-        /// <summary>
-        /// Главный метод. Вызывать извне:
-        /// generator.Generate(3, 5, new[] { new CellRequirement("A3", ItemsState.BulbRed) });
-        /// </summary>
+ 
         public void Generate(int rows, int columns, IEnumerable<CellRequirement> requirements)
         {
             var map = new Dictionary<string, ItemsState>();
@@ -68,13 +65,13 @@ namespace DragItem
 
             ClearGrid();
 
-            // Настраиваем GridLayoutGroup под нужное число столбцов
+
             var layout = gridContainer.GetComponent<GridLayoutGroup>();
             if (layout == null) layout = gridContainer.gameObject.AddComponent<GridLayoutGroup>();
             layout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
             layout.constraintCount = columns;
 
-            // Переводим адреса "A3" в (строка, столбец)
+
             var required = new Dictionary<(int row, int col), ItemsState>();
             foreach (var pair in requirements)
             {
@@ -142,9 +139,7 @@ namespace DragItem
             spawned.Clear();
         }
 
-        // ---------- Парсинг адресов ----------
 
-        // "A3" -> row 0, col 2 ; "AA10" -> row 26, col 9
         private static bool TryParseCell(string address, out int row, out int col)
         {
             row = col = -1;

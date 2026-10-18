@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 3848739730943063417}
   - component: {fileID: 4520051204382229091}
   - component: {fileID: 4437022167517229585}
+  - component: {fileID: 5643660503923763462}
+  - component: {fileID: 3802405915650331686}
   m_Layer: 5
   m_Name: BulbBlue
   m_TagString: Item
@@ -59,7 +61,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.45490196, g: 0.43529412, b: 0.99215686, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -88,4 +90,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c35d55da9407fec4a8ba4b14ae6818a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SubjectDefinition
-  state: 1
+  state: 2
+--- !u!225 &5643660503923763462
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3046194415455509299}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &3802405915650331686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3046194415455509299}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d232d6272404298408a02ea129b7a036, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DragItem.DraggableItem

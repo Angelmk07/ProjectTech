@@ -9,7 +9,9 @@ public enum ItemsState
     PurpleLightBulb,
     GreenLightBulb,
     Yellowlightbulb,
-    Bluelightbulb
+    Bluelightbulb,
+    Whightlightbulb,
+
 }
 public class ItemSystem : MonoBehaviour
 {
@@ -21,6 +23,7 @@ public class ItemSystem : MonoBehaviour
         new Item("ЛампочкаФиолетовая","PurpleLightBulb"),
         new Item("ЛампочкаЗелённаяя","GreenLightBulb"),
         new Item("ЛампочкаЖёлтая", "Yellowlightbulb"),
-        new Item("ЛампочкаГолубая", "Bluelightbulb")
+        new Item("ЛампочкаГолубая", "Bluelightbulb"),
+        new Item("ЛампочкаБелая", "Whightlightbulb")
     };
 }
