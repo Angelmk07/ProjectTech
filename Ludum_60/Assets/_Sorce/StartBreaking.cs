@@ -35,7 +35,6 @@ public class StartBreaking : InteractableBase
             puzzle.StartPuzzle(OnPuzzleSolved);
     }
 
-    // Вызовется только для того терминала, который запустил головоломку.
     private void OnPuzzleSolved()
     {
         solved = true;
