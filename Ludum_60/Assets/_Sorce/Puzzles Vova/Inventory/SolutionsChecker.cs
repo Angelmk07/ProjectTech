@@ -31,6 +31,8 @@ namespace DragItem
         // Главный метод проверки
         private void CheckPuzzleStatus()
         {
+            if (requiredSlots.Count == 0) return;
+
             int currentCorrectSlots = 0;
 
             // Считаем, сколько обязательных слотов сейчас имеют статус true
@@ -63,6 +65,11 @@ namespace DragItem
                     OnFailed?.Invoke();
                 }
             }
+        }
+        public void SetRequiredSlots(List<PuzzleSlot> slots)
+        {
+            requiredSlots = slots;
+            isPuzzleSolved = false;
         }
     }
 }

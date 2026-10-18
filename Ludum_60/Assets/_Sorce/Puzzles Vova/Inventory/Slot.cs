@@ -43,5 +43,6 @@ namespace DragItem
 
         public virtual void ClearSlot() => currentItem = null;
         public int GetIndex() => index;
+        public void SetIndex(int value) => index = value;
     }
 }

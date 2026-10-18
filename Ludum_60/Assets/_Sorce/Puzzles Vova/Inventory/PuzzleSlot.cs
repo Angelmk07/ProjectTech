@@ -67,5 +67,10 @@ namespace DragItem
                 OnSlotStateChanged?.Invoke();
             }
         }
+        public void SetRequiredState(ItemsState state)
+        {
+            requiredItemState = state;
+            isConditionMet = false;
+        }
     }
 }
