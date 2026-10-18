@@ -1,9 +1,4 @@
 using UnityEngine;
-
-/// <summary>
-/// Укрытие (шкаф, бочка, тень). По E игрок прячется, по E ещё раз — выходит.
-/// Игрок должен иметь HideController.
-/// </summary>
 public class HideSpot : InteractableBase
 {
     [Header("Hide")]
@@ -22,7 +17,6 @@ public class HideSpot : InteractableBase
     {
         if (!base.CanInteract(who)) return false;
 
-        // Занято кем-то другим — нельзя
         return occupant == null || occupant.gameObject == who.gameObject;
     }
 

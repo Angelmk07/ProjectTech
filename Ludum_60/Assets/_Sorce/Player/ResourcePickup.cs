@@ -1,25 +1,33 @@
+
 using UnityEngine;
 
-/// <summary>
-/// Монетка, ключ, кристалл. Нужен Collider2D с включённым Is Trigger.
-/// Картинка — обычный SpriteRenderer на этом же объекте.
-/// </summary>
-public class ResourcePickup : MonoBehaviour
+public class ResourcePickup : InteractableBase
 {
-    [SerializeField] ResourceType type = ResourceType.Coin;
-    [SerializeField] int amount = 1;
-    [SerializeField] LayerMask collectorLayers;
+    [Header("Resource")]
+    [SerializeField] private ResourceType type = ResourceType.LightA;
+    [SerializeField] private int amount = 1;
+    [SerializeField] private LayerMask collectorLayers;
 
-    bool collected;
+    
 
-    void OnTriggerEnter2D(Collider2D other)
+    public override bool CanInteract(InteractionDetector who)
     {
-        if (collected) return;
-        if ((collectorLayers.value & (1 << other.gameObject.layer)) == 0) return;
+        if (!base.CanInteract(who))
+            return false;
 
-        collected = true;
+        int layer = who.gameObject.layer;
+        return (collectorLayers.value & (1 << layer)) != 0;
+    }
+
+    protected override void OnInteract(InteractionDetector who)
+    {
+        if (GameManager.Instance == null)
+        {
+            Debug.LogWarning("GameManager.Instance �� ������", this);
+            return;
+        }
+
         GameManager.Instance.AddResource(type, amount);
-        // сюда: звук / эффект подбора
         Destroy(gameObject);
     }
 }

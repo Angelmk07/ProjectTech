@@ -33,11 +33,7 @@ public class HideController : MonoBehaviour, IHideable
 
         if (body != null)
         {
-#if UNITY_6000_0_OR_NEWER
             body.linearVelocity = Vector2.zero;
-#else
-            body.velocity = Vector2.zero;
-#endif
             body.simulated = false;
         }
 
