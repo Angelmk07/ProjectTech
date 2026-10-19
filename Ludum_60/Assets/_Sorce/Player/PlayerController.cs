@@ -19,16 +19,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float fallGravityMultiplier = 1.6f;
 
     [Header("Земля (только слои)")]
-    [SerializeField] Transform groundCheck;
-    [SerializeField] Vector2 groundCheckSize = new Vector2(0.5f, 0.15f);
-    [SerializeField] Vector3 Offset = new Vector2(0f, 0f);
+    [Tooltip("Слои, на которых можно стоять. Определяется по реальному касанию коллайдера игрока, триггеры игнорируются")]
     [SerializeField] LayerMask groundLayers;
 
     [Header("Склоны и лестницы")]
-    [Tooltip("Максимальный угол склона, по которому можно ходить. Круче — игрок скользит")]
+    [Tooltip("Максимальный угол поверхности, по которой можно ходить. Круче — игрок скользит")]
     [SerializeField] float maxSlopeAngle = 50f;
-    [Tooltip("Как далеко вниз от ног искать поверхность для определения наклона")]
-    [SerializeField] float slopeCheckDistance = 0.6f;
 
     [Header("Урон и смерть")]
     [SerializeField] Vector2 knockback = new Vector2(6f, 6f);
@@ -42,14 +38,20 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Вызывается после телепорта — например Animator.SetTrigger со строкой Idle")]
     [SerializeField] UnityEvent onRespawned;
 
-    [Header("Дыхание (если игрок бездействует)")]
-    [Tooltip("Сколько секунд бездействия до анимации дыхания")]
-    [SerializeField] float idleBreathDelay = 4f;
-    [Tooltip("Animator игрока. Пусто = ищется на этом объекте или в дочерних")]
+    [Header("Анимации")]
     [SerializeField] Animator animator;
-    [Tooltip("Имя Bool-параметра в Animator: true — пора дышать, false — любое действие игрока")]
-    [SerializeField] string breathingParameter = "Breathing";
-    [Tooltip("Дополнительно: звук, эффект и т.п. при начале дыхания")]
+    [SerializeField] string speedParameter = "Speed";
+    [SerializeField] string altParameter = "Alt";
+    [SerializeField] string idleParameter = "Idle";
+    [SerializeField] string inAirParameter = "InAir";
+    [SerializeField] string jumpParameter = "Jump";
+    [SerializeField] InputAction altAction = new InputAction("Alt", InputActionType.Button);
+
+    [Header("Периодический выдох при бездействии")]
+    [Tooltip("Время неподвижности до первого выдоха")]
+    [SerializeField, Min(0f)] float idleBreathDelay = 4f;
+    [Tooltip("Интервал между последующими выдохами")]
+    [SerializeField, Min(0.1f)] float breathRepeatInterval = 5f;
     [SerializeField] UnityEvent onBreathStart;
     [SerializeField] UnityEvent onBreathEnd;
 
@@ -61,7 +63,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] InputAction moveAction = new InputAction("Move", InputActionType.Value, expectedControlType: "Axis");
     [SerializeField] InputAction jumpAction = new InputAction("Jump", InputActionType.Button);
 
-    const float JumpLockTime = 0.15f; // после прыжка/удара не "прилипаем" к земле
+    const float JumpLockTime = 0.15f;    // после прыжка/удара не "прилипаем" к земле
+    const float GroundGraceTime = 0.05f; // пережидаем потерю контакта на стыках
+    const float MaxPenetration = 0.08f;  // глубже — это проход сквозь односторонку, а не стояние
 
     Rigidbody2D body;
     Health health;
@@ -72,13 +76,12 @@ public class PlayerController : MonoBehaviour
     float jumpBufferCounter;
     float stunTimer;
     float groundLockTimer;
+    float groundedGrace;
     Vector2 groundNormal = Vector2.up;
     Vector2 respawnPosition;
-    readonly Collider2D[] overlapBuffer = new Collider2D[4];
-    readonly RaycastHit2D[] rayBuffer = new RaycastHit2D[4];
+    readonly ContactPoint2D[] contactBuffer = new ContactPoint2D[16];
     float idleTimer;
     bool isBreathing;
-    bool hasBreathParam;
     bool isGrounded;
     bool alive = true;
 
@@ -100,7 +103,8 @@ public class PlayerController : MonoBehaviour
         body.sleepMode = RigidbodySleepMode2D.NeverSleep;
 
         if (animator == null) animator = GetComponentInChildren<Animator>();
-        hasBreathParam = HasBoolParameter(breathingParameter);
+        if (altAction.bindings.Count == 0)
+            altAction.AddBinding("<Keyboard>/leftAlt");
 
         if (moveAction.bindings.Count == 0 && jumpAction.bindings.Count == 0)
             AddDefaultBindings();
@@ -115,6 +119,7 @@ public class PlayerController : MonoBehaviour
         {
             moveAction.Enable();
             jumpAction.Enable();
+            altAction.Enable();
         }
     }
 
@@ -125,6 +130,7 @@ public class PlayerController : MonoBehaviour
 
         moveAction.Disable();
         jumpAction.Disable();
+        altAction.Disable();
     }
 
     void AddDefaultBindings()
@@ -152,9 +158,10 @@ public class PlayerController : MonoBehaviour
         moveInput = moveAction.ReadValue<float>();
         groundLockTimer -= Time.deltaTime;
 
-        // Земля + "время койота" (можно прыгнуть сразу после схода с края)
-        isGrounded = Physics2D.OverlapBox(groundCheck.position + Offset, groundCheckSize, 0f, GroundFilter(), overlapBuffer) > 0;
-        coyoteCounter = isGrounded ? coyoteTime : coyoteCounter - Time.deltaTime;
+        // "Время койота": можно прыгнуть сразу после схода с края.
+        // isGrounded обновляется в FixedUpdate по физическим контактам.
+        bool canCoyote = isGrounded && groundLockTimer <= 0f;
+        coyoteCounter = canCoyote ? coyoteTime : coyoteCounter - Time.deltaTime;
 
         // Буфер прыжка (нажали чуть раньше приземления)
         if (jumpAction.WasPressedThisFrame()) jumpBufferCounter = jumpBufferTime;
@@ -171,11 +178,14 @@ public class PlayerController : MonoBehaviour
 
         HandleFlip();
         UpdateIdleBreathing();
+        UpdateAnimations();
     }
 
     void FixedUpdate()
     {
         if (!alive) return;
+
+        UpdateGrounded();
 
         if (stunTimer > 0f)
         {
@@ -187,9 +197,7 @@ public class PlayerController : MonoBehaviour
         float target = moveInput * moveSpeed;
         float rate = Mathf.Abs(target) > 0.01f ? acceleration : deceleration;
 
-        bool onWalkableGround = isGrounded && groundLockTimer <= 0f && UpdateGroundNormal();
-
-        if (onWalkableGround)
+        if (isGrounded && groundLockTimer <= 0f)
         {
             // Идём ВДОЛЬ поверхности: вверх по склону, вниз по склону или по ровному.
             // Скорость задаём напрямую и отключаем гравитацию — игрок не скатывается
@@ -217,27 +225,55 @@ public class PlayerController : MonoBehaviour
         body.gravityScale = body.linearVelocity.y < 0f ? baseGravity * fallGravityMultiplier : baseGravity;
     }
 
-    // Определяет наклон поверхности под ногами. true — по ней можно ходить.
-    bool UpdateGroundNormal()
+    void UpdateGrounded()
     {
-        Vector2 origin = (Vector2)groundCheck.position + Vector2.up * 0.1f;
-        int count = Physics2D.Raycast(origin, Vector2.down, GroundFilter(), rayBuffer, slopeCheckDistance + 0.1f);
+        bool touching = groundLockTimer <= 0f && ReadGroundContacts();
 
-        groundNormal = count > 0 ? rayBuffer[0].normal : Vector2.up;
-        return Vector2.Angle(groundNormal, Vector2.up) <= maxSlopeAngle;
+        groundedGrace = touching ? GroundGraceTime : groundedGrace - Time.fixedDeltaTime;
+        isGrounded = groundedGrace > 0f;
     }
 
-    // Землёй считаются только обычные коллайдеры на слоях groundLayers.
-    // Триггеры (зоны, двери, пикапы, лестничные области) игнорируются.
-    ContactFilter2D GroundFilter()
+    // Земля = реальный физический контакт коллайдера игрока с поверхностью,
+    // нормаль которой смотрит вверх (не круче maxSlopeAngle).
+    // Поэтому не считаются: стены и боковины ступенек, потолок, триггеры,
+    // а также односторонние платформы, пока игрок проходит сквозь них снизу.
+    bool ReadGroundContacts()
     {
         ContactFilter2D filter = new ContactFilter2D();
         filter.SetLayerMask(groundLayers);
         filter.useTriggers = false;
-        return filter;
+
+        int count = body.GetContacts(filter, contactBuffer);
+
+        float minUp = Mathf.Cos(maxSlopeAngle * Mathf.Deg2Rad);
+        float centerY = body.worldCenterOfMass.y;
+        float bestUp = 0f;
+        Vector2 bestNormal = Vector2.up;
+        bool found = false;
+
+        for (int i = 0; i < count; i++)
+        {
+            ContactPoint2D c = contactBuffer[i];
+
+            if (c.point.y > centerY) continue;            // потолок или верхняя часть тела
+            if (c.separation < -MaxPenetration) continue; // глубокое перекрытие — проход сквозь платформу
+
+            Vector2 n = c.normal;
+            if (n.y < 0f) n = -n;                          // нормаль всегда вверх
+            if (n.y < minUp) continue;                     // стена или слишком крутой склон
+
+            if (n.y > bestUp)
+            {
+                bestUp = n.y;
+                bestNormal = n;
+                found = true;
+            }
+        }
+
+        if (found) groundNormal = bestNormal;
+        return found;
     }
 
-    // Любое действие обнуляет таймер; после idleBreathDelay секунд покоя включается дыхание.
     void UpdateIdleBreathing()
     {
         bool active = Mathf.Abs(moveInput) > 0.01f
@@ -253,38 +289,49 @@ public class PlayerController : MonoBehaviour
         }
 
         idleTimer += Time.deltaTime;
-        if (!isBreathing && idleTimer >= idleBreathDelay)
-            SetBreathing(true);
+
+        if (!isBreathing)
+        {
+            if (idleTimer >= idleBreathDelay)
+            {
+                isBreathing = true;
+                idleTimer = 0f;
+                PlayBreath();
+                onBreathStart?.Invoke();
+            }
+        }
+        else if (idleTimer >= breathRepeatInterval)
+        {
+            idleTimer = 0f;
+            PlayBreath();
+        }
     }
 
-    // Можно вызывать из других скриптов (взаимодействие, инвентарь и т.п.),
-    // если их действия тоже должны прерывать дыхание.
     public void ResetIdleTimer()
     {
         idleTimer = 0f;
-        if (isBreathing) SetBreathing(false);
+
+        if (isBreathing)
+        {
+            isBreathing = false;
+            onBreathEnd?.Invoke();
+        }
     }
 
-    void SetBreathing(bool value)
+    void PlayBreath()
     {
-        isBreathing = value;
-
-        if (hasBreathParam) animator.SetBool(breathingParameter, value);
-
-        if (value) onBreathStart?.Invoke();
-        else onBreathEnd?.Invoke();
+        if (animator != null)
+            animator.SetTrigger(idleParameter);
     }
 
-    bool HasBoolParameter(string parameterName)
+    void UpdateAnimations()
     {
-        if (animator == null || animator.runtimeAnimatorController == null) return false;
-        if (string.IsNullOrEmpty(parameterName)) return false;
+        if (animator == null)
+            return;
 
-        foreach (var p in animator.parameters)
-            if (p.type == AnimatorControllerParameterType.Bool && p.name == parameterName)
-                return true;
-
-        return false;
+        animator.SetFloat(speedParameter, Mathf.Abs(body.linearVelocity.x));
+        animator.SetBool(altParameter, altAction.IsPressed());
+        animator.SetBool(inAirParameter, !isGrounded);
     }
 
     void Jump()
@@ -293,7 +340,13 @@ public class PlayerController : MonoBehaviour
         jumpBufferCounter = 0f;
         coyoteCounter = 0f;
         groundLockTimer = JumpLockTime;
-        // сюда: звук / анимация прыжка
+        groundedGrace = 0f;
+        isGrounded = false;
+        if (animator != null)
+        {
+            animator.ResetTrigger(idleParameter);
+            animator.SetTrigger(jumpParameter);
+        }
     }
 
     void HandleFlip()
@@ -320,6 +373,8 @@ public class PlayerController : MonoBehaviour
         body.linearVelocity = new Vector2(dir * knockback.x, knockback.y);
         stunTimer = stunTime;
         groundLockTimer = stunTime + JumpLockTime;
+        groundedGrace = 0f;
+        isGrounded = false;
         // сюда: анимация получения урона
     }
 
@@ -328,6 +383,7 @@ public class PlayerController : MonoBehaviour
         alive = false;
         moveAction.Disable();
         jumpAction.Disable();
+        altAction.Disable();
         body.linearVelocity = Vector2.zero;
         ResetIdleTimer();
         onDied?.Invoke();
@@ -348,6 +404,8 @@ public class PlayerController : MonoBehaviour
         moveInput = 0f;
         stunTimer = 0f;
         groundLockTimer = 0f;
+        groundedGrace = 0f;
+        isGrounded = false;
         coyoteCounter = 0f;
         jumpBufferCounter = 0f;
 
@@ -355,19 +413,8 @@ public class PlayerController : MonoBehaviour
         alive = true;
         moveAction.Enable();
         jumpAction.Enable();
+        altAction.Enable();
 
         onRespawned?.Invoke();
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        if (groundCheck == null) return;
-
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireCube(groundCheck.position + Offset, groundCheckSize);
-
-        Gizmos.color = Color.yellow;
-        Vector3 origin = groundCheck.position + Vector3.up * 0.1f;
-        Gizmos.DrawLine(origin, origin + Vector3.down * (slopeCheckDistance + 0.1f));
     }
 }
