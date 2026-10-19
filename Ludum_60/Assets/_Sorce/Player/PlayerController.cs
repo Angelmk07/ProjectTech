@@ -25,6 +25,8 @@ public class PlayerController : MonoBehaviour
     [Header("Склоны и лестницы")]
     [Tooltip("Максимальный угол поверхности, по которой можно ходить. Круче — игрок скользит")]
     [SerializeField] float maxSlopeAngle = 50f;
+    [Tooltip("Рисует контакты с землёй в Scene (зелёный — земля, красный — слишком круто/стена, жёлтый — выше центра, голубой — слишком глубоко) и пишет в консоль угол при смене состояния")]
+    [SerializeField] bool debugGround;
 
     [Header("Урон и смерть")]
     [SerializeField] Vector2 knockback = new Vector2(6f, 6f);
@@ -66,6 +68,8 @@ public class PlayerController : MonoBehaviour
     const float JumpLockTime = 0.15f;    // после прыжка/удара не "прилипаем" к земле
     const float GroundGraceTime = 0.05f; // пережидаем потерю контакта на стыках
     const float MaxPenetration = 0.08f;  // глубже — это проход сквозь односторонку, а не стояние
+    const float SnapDistance = 0.15f;    // на таком расстоянии от земли подхватываем игрока на спуске
+    const float SnapPullSpeed = 3f;      // скорость "притягивания" к поверхности при подхвате
 
     Rigidbody2D body;
     Health health;
@@ -80,10 +84,17 @@ public class PlayerController : MonoBehaviour
     Vector2 groundNormal = Vector2.up;
     Vector2 respawnPosition;
     readonly ContactPoint2D[] contactBuffer = new ContactPoint2D[16];
+    readonly RaycastHit2D[] castBuffer = new RaycastHit2D[8];
     float idleTimer;
     bool isBreathing;
     bool isGrounded;
+    bool stuckToGround;   // есть контакт/подхват именно в этом физическом шаге
+    bool snapped;         // земля найдена не контактом, а подхватом сверху
     bool alive = true;
+
+    // отладка
+    int debugContactCount;
+    float debugClosestAngle;
 
     public bool IsGrounded => isGrounded;
     public bool IsBreathing => isBreathing;
@@ -197,7 +208,7 @@ public class PlayerController : MonoBehaviour
         float target = moveInput * moveSpeed;
         float rate = Mathf.Abs(target) > 0.01f ? acceleration : deceleration;
 
-        if (isGrounded && groundLockTimer <= 0f)
+        if (stuckToGround && groundLockTimer <= 0f)
         {
             // Идём ВДОЛЬ поверхности: вверх по склону, вниз по склону или по ровному.
             // Скорость задаём напрямую и отключаем гравитацию — игрок не скатывается
@@ -206,7 +217,10 @@ public class PlayerController : MonoBehaviour
             float current = Vector2.Dot(body.linearVelocity, tangent);
             current = Mathf.MoveTowards(current, target, rate * Time.fixedDeltaTime);
 
-            body.linearVelocity = tangent * current;
+            Vector2 velocity = tangent * current;
+            if (snapped) velocity -= groundNormal * SnapPullSpeed; // подтягиваем к склону
+
+            body.linearVelocity = velocity;
             body.gravityScale = 0f;
         }
         else
@@ -227,10 +241,33 @@ public class PlayerController : MonoBehaviour
 
     void UpdateGrounded()
     {
-        bool touching = groundLockTimer <= 0f && ReadGroundContacts();
+        bool wasGrounded = isGrounded;
+        bool touching = false;
+        snapped = false;
 
+        if (groundLockTimer <= 0f)
+        {
+            touching = ReadGroundContacts();
+
+            // Контакт на миг пропал (стык, спуск по склону), но только что мы стояли на земле —
+            // ищем поверхность чуть ниже. Не срабатывает после прыжка и удара.
+            if (!touching && isGrounded)
+            {
+                touching = SnapToGround();
+                snapped = touching;
+            }
+        }
+
+        stuckToGround = touching;
         groundedGrace = touching ? GroundGraceTime : groundedGrace - Time.fixedDeltaTime;
         isGrounded = groundedGrace > 0f;
+
+        if (debugGround && wasGrounded != isGrounded)
+        {
+            string angle = debugClosestAngle >= 0f ? $"{debugClosestAngle:0}°" : "нет контактов";
+            Debug.Log($"[Player] isGrounded={isGrounded}, контактов={debugContactCount}, " +
+                      $"ближайший угол поверхности={angle}, maxSlopeAngle={maxSlopeAngle}°", this);
+        }
     }
 
     // Земля = реальный физический контакт коллайдера игрока с поверхностью,
@@ -239,11 +276,7 @@ public class PlayerController : MonoBehaviour
     // а также односторонние платформы, пока игрок проходит сквозь них снизу.
     bool ReadGroundContacts()
     {
-        ContactFilter2D filter = new ContactFilter2D();
-        filter.SetLayerMask(groundLayers);
-        filter.useTriggers = false;
-
-        int count = body.GetContacts(filter, contactBuffer);
+        int count = body.GetContacts(GroundFilter(), contactBuffer);
 
         float minUp = Mathf.Cos(maxSlopeAngle * Mathf.Deg2Rad);
         float centerY = body.worldCenterOfMass.y;
@@ -251,16 +284,38 @@ public class PlayerController : MonoBehaviour
         Vector2 bestNormal = Vector2.up;
         bool found = false;
 
+        debugContactCount = count;
+        debugClosestAngle = -1f;
+
         for (int i = 0; i < count; i++)
         {
             ContactPoint2D c = contactBuffer[i];
 
-            if (c.point.y > centerY) continue;            // потолок или верхняя часть тела
-            if (c.separation < -MaxPenetration) continue; // глубокое перекрытие — проход сквозь платформу
-
             Vector2 n = c.normal;
             if (n.y < 0f) n = -n;                          // нормаль всегда вверх
-            if (n.y < minUp) continue;                     // стена или слишком крутой склон
+
+            if (c.point.y > centerY)                       // потолок или верхняя часть тела
+            {
+                if (debugGround) Debug.DrawRay(c.point, n * 0.5f, Color.yellow);
+                continue;
+            }
+
+            if (c.separation < -MaxPenetration)            // глубокое перекрытие — проход сквозь платформу
+            {
+                if (debugGround) Debug.DrawRay(c.point, n * 0.5f, Color.cyan);
+                continue;
+            }
+
+            float angle = Vector2.Angle(n, Vector2.up);
+            if (debugClosestAngle < 0f || angle < debugClosestAngle) debugClosestAngle = angle;
+
+            if (n.y < minUp)                               // стена или слишком крутой склон
+            {
+                if (debugGround) Debug.DrawRay(c.point, n * 0.5f, Color.red);
+                continue;
+            }
+
+            if (debugGround) Debug.DrawRay(c.point, n * 0.5f, Color.green);
 
             if (n.y > bestUp)
             {
@@ -272,6 +327,34 @@ public class PlayerController : MonoBehaviour
 
         if (found) groundNormal = bestNormal;
         return found;
+    }
+
+    // Короткий подхват земли под игроком вдоль предыдущей нормали.
+    bool SnapToGround()
+    {
+        int count = body.Cast(-groundNormal, GroundFilter(), castBuffer, SnapDistance);
+        float minUp = Mathf.Cos(maxSlopeAngle * Mathf.Deg2Rad);
+
+        for (int i = 0; i < count; i++)
+        {
+            Vector2 n = castBuffer[i].normal;
+            if (n.y < minUp) continue;
+
+            groundNormal = n;
+            return true;
+        }
+
+        return false;
+    }
+
+    // Землёй считаются только обычные коллайдеры на слоях groundLayers.
+    // Триггеры (зоны, двери, пикапы, лестничные области) игнорируются.
+    ContactFilter2D GroundFilter()
+    {
+        ContactFilter2D filter = new ContactFilter2D();
+        filter.SetLayerMask(groundLayers);
+        filter.useTriggers = false;
+        return filter;
     }
 
     void UpdateIdleBreathing()
@@ -342,6 +425,7 @@ public class PlayerController : MonoBehaviour
         groundLockTimer = JumpLockTime;
         groundedGrace = 0f;
         isGrounded = false;
+        stuckToGround = false;
         if (animator != null)
         {
             animator.ResetTrigger(idleParameter);
@@ -375,6 +459,7 @@ public class PlayerController : MonoBehaviour
         groundLockTimer = stunTime + JumpLockTime;
         groundedGrace = 0f;
         isGrounded = false;
+        stuckToGround = false;
         // сюда: анимация получения урона
     }
 
@@ -406,6 +491,8 @@ public class PlayerController : MonoBehaviour
         groundLockTimer = 0f;
         groundedGrace = 0f;
         isGrounded = false;
+        stuckToGround = false;
+        snapped = false;
         coyoteCounter = 0f;
         jumpBufferCounter = 0f;
 
