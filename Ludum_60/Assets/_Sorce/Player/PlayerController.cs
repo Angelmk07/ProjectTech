@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     [Header("Земля (только слои)")]
     [SerializeField] Transform groundCheck;
     [SerializeField] Vector2 groundCheckSize = new Vector2(0.5f, 0.1f);
+    [SerializeField] Vector3 Offset = new Vector2(0f, 0f);
     [SerializeField] LayerMask groundLayers;
 
     [Header("Урон и смерть")]
@@ -58,7 +59,6 @@ public class PlayerController : MonoBehaviour
 
         baseGravity = body.gravityScale;
         body.freezeRotation = true;
-        // Иначе стоя на шипах тело "засыпает" и урон перестаёт приходить
         body.sleepMode = RigidbodySleepMode2D.NeverSleep;
 
         if (moveAction.bindings.Count == 0 && jumpAction.bindings.Count == 0)
@@ -111,7 +111,7 @@ public class PlayerController : MonoBehaviour
         moveInput = moveAction.ReadValue<float>();
 
         // Земля + "время койота" (можно прыгнуть сразу после схода с края)
-        isGrounded = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayers);
+        isGrounded = Physics2D.OverlapBox(groundCheck.position + Offset, groundCheckSize, 0f, groundLayers);
         coyoteCounter = isGrounded ? coyoteTime : coyoteCounter - Time.deltaTime;
 
         // Буфер прыжка (нажали чуть раньше приземления)
