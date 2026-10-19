@@ -462,21 +462,37 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: a980eca95b0ef454ab38bf0f2a60eb61, type: 3}
+    - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.b
-      value: 0.69436
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.g
-      value: 0.5999911
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.r
-      value: 0.9150943
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: type
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: isLamp
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: lampState
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: lampSprite
+      value: 
+      objectReference: {fileID: 3276811436982843525, guid: e688317b9af6d7b469b3584005868eb0, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1366,11 +1382,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1915472882194861949, guid: 223ab0a55bf8ed148b1d5766d5502be5, type: 3}
       propertyPath: requirements.Array.data[4].cell
-      value: I1
+      value: E1
       objectReference: {fileID: 0}
     - target: {fileID: 1915472882194861949, guid: 223ab0a55bf8ed148b1d5766d5502be5, type: 3}
       propertyPath: requirements.Array.data[5].cell
-      value: I6
+      value: E6
       objectReference: {fileID: 0}
     - target: {fileID: 1915472882194861949, guid: 223ab0a55bf8ed148b1d5766d5502be5, type: 3}
       propertyPath: requirements.Array.data[0].requiredState
@@ -1386,15 +1402,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1915472882194861949, guid: 223ab0a55bf8ed148b1d5766d5502be5, type: 3}
       propertyPath: requirements.Array.data[3].requiredState
-      value: 1
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1915472882194861949, guid: 223ab0a55bf8ed148b1d5766d5502be5, type: 3}
       propertyPath: requirements.Array.data[4].requiredState
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1915472882194861949, guid: 223ab0a55bf8ed148b1d5766d5502be5, type: 3}
       propertyPath: requirements.Array.data[5].requiredState
-      value: 1
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4116765133494632960, guid: 223ab0a55bf8ed148b1d5766d5502be5, type: 3}
       propertyPath: m_Color.a
@@ -3246,12 +3262,16 @@ PrefabInstance:
       value: D1
       objectReference: {fileID: 0}
     - target: {fileID: 1915472882194861949, guid: 223ab0a55bf8ed148b1d5766d5502be5, type: 3}
+      propertyPath: requirements.Array.data[0].requiredState
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1915472882194861949, guid: 223ab0a55bf8ed148b1d5766d5502be5, type: 3}
       propertyPath: requirements.Array.data[1].requiredState
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1915472882194861949, guid: 223ab0a55bf8ed148b1d5766d5502be5, type: 3}
       propertyPath: requirements.Array.data[2].requiredState
-      value: 1
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1915472882194861949, guid: 223ab0a55bf8ed148b1d5766d5502be5, type: 3}
       propertyPath: onSolved.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -3425,6 +3445,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: key (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 3903461610694158657, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 3903461610694158657, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 3903461610694158657, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.16
+      objectReference: {fileID: 0}
     - target: {fileID: 4373566831136003265, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_LocalPosition.x
       value: -139.27
@@ -3470,16 +3502,36 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: m_Size.x
+      value: 2.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: m_Size.y
+      value: 2.61
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 8ef3455a5405aee4899976d793de9187, type: 3}
+    - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.b
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.g
-      value: 0.041553974
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.r
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: type
@@ -3497,6 +3549,10 @@ PrefabInstance:
       propertyPath: lampState
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: lampSprite
+      value: 
+      objectReference: {fileID: -937486148831353969, guid: 58aa9c27ed54c834d8c2a8b8b3db8e40, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4207,21 +4263,53 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: m_Size.x
+      value: 2.49
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: m_Size.y
+      value: 2.56
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: fd474440fcc8de54f8393c80159d6a4d, type: 3}
+    - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.b
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.g
-      value: 0.901886
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: m_WasSpriteAssigned
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: type
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: amount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: isLamp
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: lampState
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: lampSprite
+      value: 
+      objectReference: {fileID: 2599969905456701152, guid: 42f3ea38a1d9f6741b56cc62276326d6, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5173,21 +5261,41 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -6144474688483197631, guid: 3be9c00d536c38f4ca8a8440a48d4c2a, type: 3}
+    - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.b
-      value: 0.09438412
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.g
-      value: 0.9528302
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.r
-      value: 0.19224438
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: type
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: amount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: isLamp
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: lampState
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: lampSprite
+      value: 
+      objectReference: {fileID: -6288820764659943116, guid: 0d28a3a4a65cc3041a85c59db78630db, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6003,15 +6111,23 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 2573671647964583261, guid: 407d1fcb52eb14f4fb36ffc46f298c80, type: 3}
+    - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.b
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.g
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: m_SortingOrder
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
@@ -6030,6 +6146,10 @@ PrefabInstance:
       propertyPath: lampState
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: lampSprite
+      value: 
+      objectReference: {fileID: -153869320179465448, guid: b7232ea839fe22948a178abc995b2d1a, type: 3}
     - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: onInteracted.m_PersistentCalls.m_Calls.Array.size
       value: 0
@@ -6089,7 +6209,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1915472882194861949, guid: 223ab0a55bf8ed148b1d5766d5502be5, type: 3}
       propertyPath: requirements.Array.data[2].requiredState
-      value: 6
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1915472882194861949, guid: 223ab0a55bf8ed148b1d5766d5502be5, type: 3}
       propertyPath: onSolved.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -7340,8 +7460,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 48c64298ffac85d4b857bac2316a9b27, type: 3}
+    - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.b
-      value: 0.93225074
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.g
@@ -7349,8 +7473,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: amount
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: isLamp
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: lampState
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: lampSprite
+      value: 
+      objectReference: {fileID: -582467763744719747, guid: 4cbbece331e69674ba0240ddc4bf5acf, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -9556,12 +9696,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -1903368852902791723, guid: 16d29c7f81046e243b40d68ebb7bcc50, type: 3}
+    - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.b
-      value: 0.7466488
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.g
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8617207049629729105, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
       propertyPath: m_Color.r
@@ -9571,6 +9715,22 @@ PrefabInstance:
       propertyPath: type
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: amount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: isLamp
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: lampState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9063120518839548032, guid: 9877c59bc3d729e438949241eaf93391, type: 3}
+      propertyPath: lampSprite
+      value: 
+      objectReference: {fileID: 2851122649916540868, guid: 5f4d0b2aa0897ce448bbbe9bc1f18ccd, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -10520,9 +10680,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1915472882194861949, guid: 223ab0a55bf8ed148b1d5766d5502be5, type: 3}
+      propertyPath: rows
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1915472882194861949, guid: 223ab0a55bf8ed148b1d5766d5502be5, type: 3}
       propertyPath: puzzle
       value: 
       objectReference: {fileID: 1249906102}
+    - target: {fileID: 1915472882194861949, guid: 223ab0a55bf8ed148b1d5766d5502be5, type: 3}
+      propertyPath: columns
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 1915472882194861949, guid: 223ab0a55bf8ed148b1d5766d5502be5, type: 3}
       propertyPath: requirements.Array.size
       value: 2
@@ -10533,7 +10701,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1915472882194861949, guid: 223ab0a55bf8ed148b1d5766d5502be5, type: 3}
       propertyPath: requirements.Array.data[1].cell
-      value: A2
+      value: A4
       objectReference: {fileID: 0}
     - target: {fileID: 1915472882194861949, guid: 223ab0a55bf8ed148b1d5766d5502be5, type: 3}
       propertyPath: requirements.Array.data[0].requiredState
