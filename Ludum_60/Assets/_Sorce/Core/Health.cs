@@ -76,6 +76,14 @@ public class Health : MonoBehaviour
         HandleDeath();
     }
 
+    // Возрождение игрока: полное здоровье и короткая неуязвимость
+    public void Revive()
+    {
+        Current = maxHealth;
+        invulnerableUntil = Time.time + invulnerabilityTime;
+        Changed?.Invoke(Current, maxHealth);
+    }
+
     void HandleDeath()
     {
         StopAllCoroutines();

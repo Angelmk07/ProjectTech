@@ -1,11 +1,14 @@
 
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WorldInteractionPrompt : MonoBehaviour
 {
     [SerializeField] private InteractionDetector detector;
+
     [SerializeField] private TMP_Text promptText;
+    [SerializeField] private Image Image;
     [SerializeField] private Vector3 worldOffset = new Vector3(0f, 1f, 0f);
 
     private void Awake()
@@ -13,26 +16,25 @@ public class WorldInteractionPrompt : MonoBehaviour
         if (detector == null)
             detector = GetComponent<InteractionDetector>();
 
-        if (promptText != null)
-            promptText.gameObject.SetActive(false);
+        if (Image != null)
+            Image.gameObject.SetActive(false);
     }
 
     private void LateUpdate()
     {
-        if (detector == null || promptText == null)
+        if (detector == null || Image == null)
             return;
 
         IInteractable target = detector.Current;
 
         if (target == null)
         {
-            promptText.gameObject.SetActive(false);
+            Image.gameObject.SetActive(false);
             return;
         }
 
-        promptText.gameObject.SetActive(true);
+        Image.gameObject.SetActive(true);
         promptText.text = $"[E] {target.PromptText}";
-        promptText.transform.position =
-            target.PromptAnchor.position + worldOffset;
+        Image.transform.position = target.PromptAnchor.position + worldOffset;
     }
 }
