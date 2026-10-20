@@ -570,6 +570,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7624809210700229269, guid: 05fbbfb9fcabb7d46bc6969d866e7f1d, type: 3}
+      propertyPath: moveSpeed
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1302,7 +1306,7 @@ Transform:
   m_GameObject: {fileID: 1595666519}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 81.05, y: -5.38, z: 0}
+  m_LocalPosition: {x: 73.64, y: -5.38, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1343,7 +1347,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.16101837, y: 1.1915119}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -1353,7 +1357,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.3220367, y: 3.3830237}
   m_EdgeRadius: 0
 --- !u!1 &1604984564
 GameObject:
@@ -1408,7 +1412,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7000451844442553593, guid: 13e9b8211416e1c4e80aab6af0ecf935, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 109.1
+      value: 89.78
       objectReference: {fileID: 0}
     - target: {fileID: 7000451844442553593, guid: 13e9b8211416e1c4e80aab6af0ecf935, type: 3}
       propertyPath: m_LocalPosition.y
