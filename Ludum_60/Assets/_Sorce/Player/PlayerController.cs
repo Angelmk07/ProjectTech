@@ -31,13 +31,17 @@ public class PlayerController : MonoBehaviour
     [Header("Урон и смерть")]
     [SerializeField] Vector2 knockback = new Vector2(6f, 6f);
     [SerializeField] float stunTime = 0.25f;
-    [Tooltip("Задержка между смертью и телепортом (здесь играет анимация смерти)")]
+    [Tooltip("Задержка между смертью и началом затемнения (здесь играет анимация смерти)")]
     [SerializeField] float respawnDelay = 1.5f;
+    [Tooltip("Скорость затемнения при смерти: 1 = за 1 сек, 2 = за 0.5 сек, 0.5 = за 2 сек")]
+    [SerializeField] float deathFadeOutSpeed = 2f;
+    [Tooltip("Скорость осветления после возрождения")]
+    [SerializeField] float deathFadeInSpeed = 2f;
     [Tooltip("Точка возрождения. Пусто = место, где игрок стоял при старте сцены")]
     [SerializeField] Transform respawnPoint;
     [Tooltip("Вызывается при смерти — например Animator.SetTrigger со строкой Die")]
     [SerializeField] UnityEvent onDied;
-    [Tooltip("Вызывается после телепорта — например Animator.SetTrigger со строкой Idle")]
+    [Tooltip("Вызывается после телепорта (на чёрном экране) — например Animator.SetTrigger со строкой Idle")]
     [SerializeField] UnityEvent onRespawned;
 
     [Header("Анимации")]
@@ -47,6 +51,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] string idleParameter = "Idle";
     [SerializeField] string inAirParameter = "InAir";
     [SerializeField] string jumpParameter = "Jump";
+    [Tooltip("Trigger для анимации смерти в Animator")]
+    [SerializeField] string deathParameter = "Die";
+    [Tooltip("Полное имя состояния Animator, в которое перейти после возрождения")]
+    [SerializeField] string respawnAnimatorState = "Move";
     [SerializeField] InputAction altAction = new InputAction("Alt", InputActionType.Button);
 
     [Header("Периодический выдох при бездействии")]
@@ -70,6 +78,7 @@ public class PlayerController : MonoBehaviour
     const float MaxPenetration = 0.08f;  // глубже — это проход сквозь односторонку, а не стояние
     const float SnapDistance = 0.15f;    // на таком расстоянии от земли подхватываем игрока на спуске
     const float SnapPullSpeed = 3f;      // скорость "притягивания" к поверхности при подхвате
+    const float RespawnRetryTime = 0.1f; // если экран занят другим переходом — повторяем чуть позже
 
     Rigidbody2D body;
     Health health;
@@ -466,19 +475,44 @@ public class PlayerController : MonoBehaviour
     void OnDied()
     {
         alive = false;
+
         moveAction.Disable();
         jumpAction.Disable();
         altAction.Disable();
+
         body.linearVelocity = Vector2.zero;
+        body.gravityScale = 0f;
         ResetIdleTimer();
+
+        if (animator != null)
+        {
+            animator.ResetTrigger(jumpParameter);
+            animator.ResetTrigger(idleParameter);
+            animator.SetFloat(speedParameter, 0f);
+            animator.SetBool(altParameter, false);
+            animator.SetBool(inAirParameter, false);
+            animator.ResetTrigger(deathParameter);
+            animator.SetTrigger(deathParameter);
+        }
+
         onDied?.Invoke();
 
-        Invoke(nameof(Respawn), respawnDelay);
+        CancelInvoke(nameof(StartRespawn));
+        Invoke(nameof(StartRespawn), respawnDelay);
     }
 
     // Для чекпоинтов: следующая смерть вернёт игрока в эту точку
     public void SetRespawnPoint(Vector2 position) => respawnPosition = position;
 
+    // После анимации смерти: затемняем экран → на чёрном возрождаем → осветляем.
+    void StartRespawn()
+    {
+        // Экран занят другим переходом (например, телепортом) — пробуем чуть позже
+        if (!ScreenFader.Transition(deathFadeOutSpeed, deathFadeInSpeed, Respawn))
+            Invoke(nameof(StartRespawn), RespawnRetryTime);
+    }
+
+    // Вызывается ScreenFader на полностью чёрном экране
     void Respawn()
     {
         transform.position = respawnPosition;
@@ -495,12 +529,30 @@ public class PlayerController : MonoBehaviour
         snapped = false;
         coyoteCounter = 0f;
         jumpBufferCounter = 0f;
+        idleTimer = 0f;
+        isBreathing = false;
 
         health.Revive();
+
+        if (animator != null)
+        {
+            animator.ResetTrigger(deathParameter);
+            animator.ResetTrigger(jumpParameter);
+            animator.ResetTrigger(idleParameter);
+            animator.SetFloat(speedParameter, 0f);
+            animator.SetBool(altParameter, false);
+            animator.SetBool(inAirParameter, false);
+            animator.Play(respawnAnimatorState, 0, 0f);
+            animator.Update(0f);
+        }
+
         alive = true;
         moveAction.Enable();
         jumpAction.Enable();
         altAction.Enable();
+
+        // Камера не должна «лететь» к точке возрождения на глазах у игрока
+        if (CameraFollow2D.Instance != null) CameraFollow2D.Instance.SnapToTarget();
 
         onRespawned?.Invoke();
     }

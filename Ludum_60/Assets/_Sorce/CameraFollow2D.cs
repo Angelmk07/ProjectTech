@@ -2,6 +2,8 @@ using UnityEngine;
 
 /// <summary>
 /// Плавная камера для 2D: следование, мёртвая зона, заглядывание вперёд, границы уровня.
+/// Если на камере есть CameraRooms и включено «Учитывать комнаты», границы берутся из комнаты,
+/// в которой сейчас игрок; иначе — из «Границ уровня» ниже.
 /// Повесить на камеру (Orthographic).
 /// </summary>
 [RequireComponent(typeof(Camera))]
@@ -27,11 +29,12 @@ public class CameraFollow2D : MonoBehaviour
     [SerializeField] private float lookAheadSmoothTime = 0.3f;
     [SerializeField] private float lookAheadMinSpeed = 0.5f;
 
-    [Header("Границы уровня (мировые координаты)")]
+    [Header("Границы уровня (мировые координаты) — когда комнаты не используются")]
     [SerializeField] private bool useBounds = false;
     [SerializeField] private Rect levelBounds = new Rect(-50f, -20f, 100f, 40f);
 
     private Camera cam;
+    private CameraRooms rooms;
     private Vector3 velocity;
     private float lookAheadX;
     private float lookAheadVelocity;
@@ -41,6 +44,7 @@ public class CameraFollow2D : MonoBehaviour
     {
         Instance = this;
         cam = GetComponent<Camera>();
+        rooms = GetComponent<CameraRooms>();
     }
 
     private void OnDestroy()
@@ -98,18 +102,29 @@ public class CameraFollow2D : MonoBehaviour
 
     private Vector3 ClampToBounds(Vector3 pos)
     {
-        if (!useBounds || !cam.orthographic) return pos;
+        if (!cam.orthographic) return pos;
 
+        // Комнаты (если включены) важнее общих границ уровня.
+        if (rooms != null && target != null && rooms.TryGetBounds(target.position, out Rect roomBounds))
+            return ClampToRect(pos, roomBounds);
+
+        if (useBounds) return ClampToRect(pos, levelBounds);
+
+        return pos;
+    }
+
+    private Vector3 ClampToRect(Vector3 pos, Rect bounds)
+    {
         float halfH = cam.orthographicSize;
         float halfW = halfH * cam.aspect;
 
-        pos.x = levelBounds.width <= halfW * 2f
-            ? levelBounds.center.x
-            : Mathf.Clamp(pos.x, levelBounds.xMin + halfW, levelBounds.xMax - halfW);
+        pos.x = bounds.width <= halfW * 2f
+            ? bounds.center.x
+            : Mathf.Clamp(pos.x, bounds.xMin + halfW, bounds.xMax - halfW);
 
-        pos.y = levelBounds.height <= halfH * 2f
-            ? levelBounds.center.y
-            : Mathf.Clamp(pos.y, levelBounds.yMin + halfH, levelBounds.yMax - halfH);
+        pos.y = bounds.height <= halfH * 2f
+            ? bounds.center.y
+            : Mathf.Clamp(pos.y, bounds.yMin + halfH, bounds.yMax - halfH);
 
         return pos;
     }

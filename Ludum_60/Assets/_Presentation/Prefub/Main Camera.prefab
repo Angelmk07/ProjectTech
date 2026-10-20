@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 7817154604315150182}
   - component: {fileID: 164299088355500853}
   - component: {fileID: 8236162057116362840}
+  - component: {fileID: 6280103288068886833}
+  - component: {fileID: 6620561038658018296}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -166,3 +168,32 @@ MonoBehaviour:
     y: -20
     width: 100
     height: 40
+--- !u!114 &6280103288068886833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 833738699223222082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0f22773fcc8e9449bf9d21b123ea1de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraFadeIn
+  fadeSpeed: 1.5
+  holdBlackTime: 0.15
+  fadeInOnEveryStart: 0
+--- !u!114 &6620561038658018296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 833738699223222082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6aa684530b0dbe1408148e49a6197785, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraRooms
+  useRooms: 0
+  rooms: []
