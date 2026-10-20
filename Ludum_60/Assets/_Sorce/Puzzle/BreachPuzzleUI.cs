@@ -209,7 +209,7 @@ public class BreachPuzzleUI : MonoBehaviour
 
         if (statusText != null)
         {
-            statusText.text = success ? "ВЗЛОМ УСПЕШЕН" : "ВЗЛОМ ПРОВАЛЕН";
+            statusText.text = success ? "Hack completed" : "Hack failed";
             statusText.color = success ? Color.green : Color.red;
         }
         var onDone = success ? solvedCallback : failedCallback;
@@ -252,6 +252,6 @@ public class BreachPuzzleUI : MonoBehaviour
 
         if (timerText != null) timerText.text = timeLeft.ToString("0.0");
         if (timerFill != null) timerFill.fillAmount = timeLimit > 0f ? timeLeft / timeLimit : 0f;
-        if (errorsText != null) errorsText.text = $"Ошибки: {errors}/{maxErrors}";
+        if (errorsText != null) errorsText.text = $"Errors: {errors}/{maxErrors}";
     }
 }
