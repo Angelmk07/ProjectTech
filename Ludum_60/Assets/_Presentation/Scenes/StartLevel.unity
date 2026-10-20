@@ -138,7 +138,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7424741739697104206, guid: df97fe740b900224cbcc343f4e65ba5b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 16.87
       objectReference: {fileID: 0}
     - target: {fileID: 7424741739697104206, guid: df97fe740b900224cbcc343f4e65ba5b, type: 3}
       propertyPath: m_LocalPosition.y
@@ -468,7 +468,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7551341954201864402, guid: 05fbbfb9fcabb7d46bc6969d866e7f1d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.30113
+      value: -3.13
       objectReference: {fileID: 0}
     - target: {fileID: 7551341954201864402, guid: 05fbbfb9fcabb7d46bc6969d866e7f1d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1138,6 +1138,8 @@ MonoBehaviour:
   onInteract:
     m_PersistentCalls:
       m_Calls: []
+  sceneName: 
+  fadeOutSpeed: 2
 --- !u!4 &1595666521
 Transform:
   m_ObjectHideFlags: 0
