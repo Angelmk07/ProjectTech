@@ -6185,11 +6185,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4503101591480910235, guid: 6eb62d2637eab5a4ab09674c057ba020, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 22.31
+      value: -0.02
       objectReference: {fileID: 0}
     - target: {fileID: 4503101591480910235, guid: 6eb62d2637eab5a4ab09674c057ba020, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -8.23
+      value: -0.25
       objectReference: {fileID: 0}
     - target: {fileID: 5761717581571670516, guid: 6eb62d2637eab5a4ab09674c057ba020, type: 3}
       propertyPath: exitPrompt
@@ -6797,7 +6797,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4503101591480910235, guid: 6eb62d2637eab5a4ab09674c057ba020, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.47
+      value: -0.2
       objectReference: {fileID: 0}
     - target: {fileID: 5761717581571670516, guid: 6eb62d2637eab5a4ab09674c057ba020, type: 3}
       propertyPath: exitPrompt
@@ -7176,6 +7176,14 @@ PrefabInstance:
     - target: {fileID: 5761717581571670516, guid: 6eb62d2637eab5a4ab09674c057ba020, type: 3}
       propertyPath: enterPrompt
       value: Hide
+      objectReference: {fileID: 0}
+    - target: {fileID: 9035258200140046743, guid: 6eb62d2637eab5a4ab09674c057ba020, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 9035258200140046743, guid: 6eb62d2637eab5a4ab09674c057ba020, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.72
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
